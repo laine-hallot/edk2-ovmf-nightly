@@ -1,5 +1,5 @@
 diff --git a/ArmVirtPkg/ArmVirtCloudHv.dsc b/ArmVirtPkg/ArmVirtCloudHv.dsc
-index 2dfd286..4fdafea 100644
+index c6b4973..8179481 100644
 --- a/ArmVirtPkg/ArmVirtCloudHv.dsc
 +++ b/ArmVirtPkg/ArmVirtCloudHv.dsc
 @@ -166,7 +166,7 @@
@@ -12,7 +12,7 @@ index 2dfd286..4fdafea 100644
    ## If TRUE, OvmfPkg/AcpiPlatformDxe will not wait for PCI
    #  enumeration to complete before installing ACPI tables.
 diff --git a/ArmVirtPkg/ArmVirtKvmTool.dsc b/ArmVirtPkg/ArmVirtKvmTool.dsc
-index 62ee806..f332a82 100644
+index 598f804..8a0b8e3 100644
 --- a/ArmVirtPkg/ArmVirtKvmTool.dsc
 +++ b/ArmVirtPkg/ArmVirtKvmTool.dsc
 @@ -178,7 +178,7 @@
@@ -36,10 +36,10 @@ index 62ee806..f332a82 100644
    gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|480
  
 diff --git a/ArmVirtPkg/ArmVirtQemu.dsc b/ArmVirtPkg/ArmVirtQemu.dsc
-index a38a1d8..267e9d8 100644
+index d7aace5..6741981 100644
 --- a/ArmVirtPkg/ArmVirtQemu.dsc
 +++ b/ArmVirtPkg/ArmVirtQemu.dsc
-@@ -257,7 +257,7 @@
+@@ -258,7 +258,7 @@
    gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosEntryPointProvideMethod|0x2
  
  [PcdsDynamicDefault.common]
@@ -48,7 +48,7 @@ index a38a1d8..267e9d8 100644
  
    gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareBase     | 0
    gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareBase64   | 0
-@@ -325,7 +325,7 @@
+@@ -326,7 +326,7 @@
    gEfiSecurityPkgTokenSpaceGuid.PcdTpm2AcpiTableRev|L"TCG2_VERSION"|gTcg2ConfigFormSetGuid|0x8|3|NV,BS
  !endif
  
@@ -58,7 +58,7 @@ index a38a1d8..267e9d8 100644
  [LibraryClasses.common.PEI_CORE, LibraryClasses.common.PEIM]
  !if $(TPM2_ENABLE) == TRUE
 diff --git a/ArmVirtPkg/ArmVirtQemuKernel.dsc b/ArmVirtPkg/ArmVirtQemuKernel.dsc
-index d257ca4..60f755a 100644
+index 147daa2..46cf122 100644
 --- a/ArmVirtPkg/ArmVirtQemuKernel.dsc
 +++ b/ArmVirtPkg/ArmVirtQemuKernel.dsc
 @@ -215,7 +215,7 @@
@@ -82,7 +82,7 @@ index d257ca4..60f755a 100644
    gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|480
    gEfiMdeModulePkgTokenSpaceGuid.PcdConOutRow|0
 diff --git a/ArmVirtPkg/ArmVirtXen.dsc b/ArmVirtPkg/ArmVirtXen.dsc
-index 2ec264a..db9dbe6 100644
+index f60fa5e..1bf9c65 100644
 --- a/ArmVirtPkg/ArmVirtXen.dsc
 +++ b/ArmVirtPkg/ArmVirtXen.dsc
 @@ -131,7 +131,7 @@
@@ -95,7 +95,7 @@ index 2ec264a..db9dbe6 100644
  ################################################################################
  #
 diff --git a/EmulatorPkg/EmulatorPkg.dsc b/EmulatorPkg/EmulatorPkg.dsc
-index eb2a817..0b874ed 100644
+index d6e71b3..859ceec 100644
 --- a/EmulatorPkg/EmulatorPkg.dsc
 +++ b/EmulatorPkg/EmulatorPkg.dsc
 @@ -343,7 +343,7 @@
@@ -108,10 +108,10 @@ index eb2a817..0b874ed 100644
  
  [Components]
 diff --git a/OvmfPkg/AmdSev/AmdSevX64.dsc b/OvmfPkg/AmdSev/AmdSevX64.dsc
-index 266c725..32d713b 100644
+index a84f466..dd28225 100644
 --- a/OvmfPkg/AmdSev/AmdSevX64.dsc
 +++ b/OvmfPkg/AmdSev/AmdSevX64.dsc
-@@ -508,8 +508,8 @@
+@@ -511,8 +511,8 @@
    gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareBase64|0
    gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingBase|0
    gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareBase|0
@@ -123,7 +123,7 @@ index 266c725..32d713b 100644
    gEfiMdeModulePkgTokenSpaceGuid.PcdConOutColumn|0
    gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiS3Enable|FALSE
 diff --git a/OvmfPkg/Bhyve/BhyveX64.dsc b/OvmfPkg/Bhyve/BhyveX64.dsc
-index 131f16f..d74a0f1 100644
+index 4f119f8..39a4c3c 100644
 --- a/OvmfPkg/Bhyve/BhyveX64.dsc
 +++ b/OvmfPkg/Bhyve/BhyveX64.dsc
 @@ -538,8 +538,8 @@
@@ -152,11 +152,24 @@ index ecd22b0..19b8062 100644
    gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoHorizontalResolution|1280
    gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|800
    gEfiMdeModulePkgTokenSpaceGuid.PcdConOutRow|0
+diff --git a/OvmfPkg/Include/Dsc/UsbComponents.dsc.inc b/OvmfPkg/Include/Dsc/UsbComponents.dsc.inc
+index 69dd388..369e1e1 100644
+--- a/OvmfPkg/Include/Dsc/UsbComponents.dsc.inc
++++ b/OvmfPkg/Include/Dsc/UsbComponents.dsc.inc
+@@ -9,6 +9,8 @@
+   MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
+   MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+   MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
++  MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf
++  MdeModulePkg/Bus/Usb/UsbMouseAbsolutePointerDxe/UsbMouseAbsolutePointerDxe.inf
+   MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf {
+     <LibraryClasses>
+       UefiDriverEntryPoint|OvmfPkg/Library/UefiDriverEntryPointFwCfgOverrideLib/UefiDriverEntryPointFwCfgOverrideLib.inf
 diff --git a/OvmfPkg/IntelTdx/IntelTdxX64.dsc b/OvmfPkg/IntelTdx/IntelTdxX64.dsc
-index 18fd116..32d6495 100644
+index 394758c..bcd8d9a 100644
 --- a/OvmfPkg/IntelTdx/IntelTdxX64.dsc
 +++ b/OvmfPkg/IntelTdx/IntelTdxX64.dsc
-@@ -485,8 +485,8 @@
+@@ -487,8 +487,8 @@
    gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingBase|0
    gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareBase|0
  
@@ -168,10 +181,10 @@ index 18fd116..32d6495 100644
    gUefiOvmfPkgTokenSpaceGuid.PcdOvmfHostBridgePciDevId|0
    gUefiOvmfPkgTokenSpaceGuid.PcdPciIoBase|0x0
 diff --git a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc b/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
-index b4418f7..c88f4da 100644
+index 60907d7..0346af2 100644
 --- a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
 +++ b/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
-@@ -413,9 +413,9 @@
+@@ -451,9 +451,9 @@
    gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingBase64     | 0
    gEfiMdeModulePkgTokenSpaceGuid.PcdEmuVariableNvStoreReserved         | 0
    gEfiMdeModulePkgTokenSpaceGuid.PcdPciDisableBusEnumeration           | FALSE
@@ -184,7 +197,7 @@ index b4418f7..c88f4da 100644
  
    # Set video resolution for text setup.
    gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoHorizontalResolution     | 640
-@@ -442,7 +442,7 @@
+@@ -480,7 +480,7 @@
    gUefiOvmfPkgTokenSpaceGuid.PcdQemuSmbiosValidated|TRUE
  
  [PcdsDynamicHii]
@@ -193,6 +206,19 @@ index b4418f7..c88f4da 100644
  
  [PcdsPatchableInModule.common]
    gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase|0x0
+diff --git a/OvmfPkg/OvmfPkgX64.fdf b/OvmfPkg/OvmfPkgX64.fdf
+index 545404f..ffbb8ca 100644
+--- a/OvmfPkg/OvmfPkgX64.fdf
++++ b/OvmfPkg/OvmfPkgX64.fdf
+@@ -303,6 +303,8 @@ INF  MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
+ INF  MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+ INF  MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
+ INF  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
++INF  MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf
++INF  MdeModulePkg/Bus/Usb/UsbMouseAbsolutePointerDxe/UsbMouseAbsolutePointerDxe.inf
+ 
+ INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
+ INF  OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
 diff --git a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc b/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
 index d3ae3af..018bc06 100644
 --- a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
@@ -216,7 +242,7 @@ index d3ae3af..018bc06 100644
  [LibraryClasses.common.PEI_CORE, LibraryClasses.common.PEIM]
  !if $(TPM2_ENABLE) == TRUE
 diff --git a/UefiPayloadPkg/UefiPayloadPkg.dsc b/UefiPayloadPkg/UefiPayloadPkg.dsc
-index 0b2025b..451b602 100644
+index 3faed2a..412d626 100644
 --- a/UefiPayloadPkg/UefiPayloadPkg.dsc
 +++ b/UefiPayloadPkg/UefiPayloadPkg.dsc
 @@ -34,7 +34,7 @@
