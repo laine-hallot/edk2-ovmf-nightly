@@ -1,6 +1,8 @@
 edk2-ovmf-nightly
 =================
 
+Same as upstream but this version includes absolute pointer
+
 This repository uses GitHub workflows to build nightly images of EDK2 OVMF
 firmware for QEMU.
 

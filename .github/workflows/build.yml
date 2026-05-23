@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'trunk'
+      - 'pointer'
   schedule:
     - cron: '0 0 * * *'
 
@@ -43,6 +43,7 @@ jobs:
           ( cd edk2 && patch -p1 <../ovmf.patch )
           # Restores OvmfPkgIa32, deleted upstream in 1fb88ffe2.
           ( cd edk2 && patch -p1 <../ovmf-ia32.patch )
+          ( cd edk2 && patch -p1 <../ovmf-absolute-pointer.patch )
 
           export PACKAGES_PATH="$(pwd -P)"/edk2
 
