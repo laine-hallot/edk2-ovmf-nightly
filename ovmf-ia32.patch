@@ -542,7 +542,7 @@ new file mode 100644
 index 000000000..5c6652a58
 --- /dev/null
 +++ b/OvmfPkg/OvmfPkgIa32.dsc
-@@ -0,0 +1,938 @@
+@@ -0,0 +1,941 @@
 +## @file
 +#  EFI/Framework Open Virtual Machine Firmware (OVMF) platform
 +#
@@ -981,6 +981,8 @@ index 000000000..5c6652a58
 +  BaseCryptLib|CryptoPkg/Library/BaseCryptLib/SmmCryptLib.inf
 +  PciLib|OvmfPkg/Library/DxePciLibI440FxQ35/DxePciLibI440FxQ35.inf
 +  SmmCpuRendezvousLib|UefiCpuPkg/Library/SmmCpuRendezvousLib/SmmCpuRendezvousLib.inf
++  MmSaveStateLib|UefiCpuPkg/Library/MmSaveStateLib/AmdMmSaveStateLib.inf
++  AmdSysCallLib|UefiCpuPkg/Library/AmdSysCallLibNull/AmdSysCallLibNull.inf
 +
 +[LibraryClasses.common.SMM_CORE]
 +  PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
@@ -1437,6 +1439,7 @@ index 000000000..5c6652a58
 +      SmmCpuPlatformHookLib|OvmfPkg/Library/SmmCpuPlatformHookLibQemu/SmmCpuPlatformHookLibQemu.inf
 +      SmmCpuFeaturesLib|OvmfPkg/Library/SmmCpuFeaturesLib/SmmCpuFeaturesLib.inf
 +      MmSaveStateLib|UefiCpuPkg/Library/MmSaveStateLib/AmdMmSaveStateLib.inf
++      AmdSysCallLib|UefiCpuPkg/Library/AmdSysCallLibNull/AmdSysCallLibNull.inf
 +      SmmCpuSyncLib|UefiCpuPkg/Library/SmmCpuSyncLib/SmmCpuSyncLib.inf
 +  }
 +  MdeModulePkg/Universal/SmmCommunicationBufferDxe/SmmCommunicationBufferDxe.inf
