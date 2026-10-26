@@ -35,7 +35,7 @@ index b8c54c915..2f4ac4098 100644
    gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|480
  
 diff --git a/ArmVirtPkg/ArmVirtQemu.dsc b/ArmVirtPkg/ArmVirtQemu.dsc
-index 7b75ff884..ba888ef9e 100644
+index 7b75ff884..f2e13a54c 100644
 --- a/ArmVirtPkg/ArmVirtQemu.dsc
 +++ b/ArmVirtPkg/ArmVirtQemu.dsc
 @@ -44,7 +44,8 @@
@@ -76,8 +76,16 @@ index 7b75ff884..ba888ef9e 100644
    #
    # NVME Driver
    #
+@@ -427,6 +442,7 @@
+ !if $(TPM2_CONFIG_ENABLE) == TRUE
+   SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
+ !endif
++  MdeModulePkg/Universal/SmbiosMeasurementDxe/SmbiosMeasurementDxe.inf
+ !endif
+ 
+   #
 diff --git a/ArmVirtPkg/ArmVirtQemuFvMain.fdf.inc b/ArmVirtPkg/ArmVirtQemuFvMain.fdf.inc
-index 98b6261d7..8caff2a23 100644
+index 98b6261d7..6e1c82623 100644
 --- a/ArmVirtPkg/ArmVirtQemuFvMain.fdf.inc
 +++ b/ArmVirtPkg/ArmVirtQemuFvMain.fdf.inc
 @@ -138,6 +138,15 @@ READ_LOCK_STATUS   = TRUE
@@ -104,6 +112,14 @@ index 98b6261d7..8caff2a23 100644
    INF MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
  
    #
+@@ -194,6 +204,7 @@ READ_LOCK_STATUS   = TRUE
+   #
+ !if $(TPM2_ENABLE) == TRUE
+   INF SecurityPkg/Tcg/Tcg2Dxe/Tcg2Dxe.inf
++  INF MdeModulePkg/Universal/SmbiosMeasurementDxe/SmbiosMeasurementDxe.inf
+ !if $(TPM2_CONFIG_ENABLE) == TRUE
+   INF SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
+ !endif
 diff --git a/ArmVirtPkg/ArmVirtQemuKernel.dsc b/ArmVirtPkg/ArmVirtQemuKernel.dsc
 index 9758401a9..ac7f1669c 100644
 --- a/ArmVirtPkg/ArmVirtQemuKernel.dsc
@@ -358,7 +374,7 @@ index 9e89556b1..ad08c1628 100644
    PcdLib
    PlatformBmPrintScLib
 diff --git a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc b/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
-index 96577eebe..268570d1b 100644
+index 96577eebe..ecf7ee5d9 100644
 --- a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
 +++ b/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
 @@ -48,9 +48,15 @@
@@ -514,8 +530,14 @@ index 96577eebe..268570d1b 100644
  
    #
    # ACPI Support
+@@ -830,4 +820,5 @@
+ !if $(TPM2_CONFIG_ENABLE) == TRUE
+   SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
+ !endif
++  MdeModulePkg/Universal/SmbiosMeasurementDxe/SmbiosMeasurementDxe.inf
+ !endif
 diff --git a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.fdf b/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.fdf
-index a5c00af79..c44f6551e 100644
+index a5c00af79..17560b7c4 100644
 --- a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.fdf
 +++ b/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.fdf
 @@ -107,6 +107,7 @@ INF  UefiCpuPkg/CpuMmio2Dxe/CpuMmio2Dxe.inf
@@ -582,6 +604,14 @@ index a5c00af79..c44f6551e 100644
  INF  OvmfPkg/VirtioFsDxe/VirtioFsDxe.inf
  
  !include OvmfPkg/Include/Fdf/ShellDxe.fdf.inc
+@@ -217,6 +228,7 @@ INF MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableDxe/FirmwarePerforma
+ #
+ !if $(TPM2_ENABLE) == TRUE
+   INF SecurityPkg/Tcg/Tcg2Dxe/Tcg2Dxe.inf
++  INF MdeModulePkg/Universal/SmbiosMeasurementDxe/SmbiosMeasurementDxe.inf
+ !if $(TPM2_CONFIG_ENABLE) == TRUE
+   INF SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
+ !endif
 diff --git a/OvmfPkg/OvmfPkgX64.fdf b/OvmfPkg/OvmfPkgX64.fdf
 index dd42cf005..a5314821c 100644
 --- a/OvmfPkg/OvmfPkgX64.fdf
@@ -595,7 +625,7 @@ index dd42cf005..a5314821c 100644
  
  INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
 diff --git a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc b/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
-index 341c40074..e644447d7 100644
+index 341c40074..9e86912d0 100644
 --- a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
 +++ b/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
 @@ -56,7 +56,8 @@
@@ -726,8 +756,16 @@ index 341c40074..e644447d7 100644
  
    #
    # TPM2 support
+@@ -592,6 +585,7 @@
+ !if $(TPM2_CONFIG_ENABLE) == TRUE
+   SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
+ !endif
++  MdeModulePkg/Universal/SmbiosMeasurementDxe/SmbiosMeasurementDxe.inf
+ !endif
+ 
+   #
 diff --git a/OvmfPkg/RiscVVirt/RiscVVirtQemu.fdf b/OvmfPkg/RiscVVirt/RiscVVirtQemu.fdf
-index 80009fc09..91e654db3 100644
+index 80009fc09..db856e8a2 100644
 --- a/OvmfPkg/RiscVVirt/RiscVVirtQemu.fdf
 +++ b/OvmfPkg/RiscVVirt/RiscVVirtQemu.fdf
 @@ -151,9 +151,12 @@ INF  MdeModulePkg/Universal/StatusCodeHandler/RuntimeDxe/StatusCodeHandlerRuntim
@@ -776,6 +814,14 @@ index 80009fc09..91e654db3 100644
  INF  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
  
  #
+@@ -243,6 +251,7 @@ INF  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+ #
+ !if $(TPM2_ENABLE) == TRUE
+   INF SecurityPkg/Tcg/Tcg2Dxe/Tcg2Dxe.inf
++  INF MdeModulePkg/Universal/SmbiosMeasurementDxe/SmbiosMeasurementDxe.inf
+ !if $(TPM2_CONFIG_ENABLE) == TRUE
+   INF SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
+ !endif
 diff --git a/UefiPayloadPkg/UefiPayloadPkg.dsc b/UefiPayloadPkg/UefiPayloadPkg.dsc
 index adc24f2b5..9538885fb 100644
 --- a/UefiPayloadPkg/UefiPayloadPkg.dsc
