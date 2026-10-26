@@ -92,7 +92,7 @@ index 80aae96c3..d97a6aad4 100644
  /*
   * STATUS RETURN CODES.
 diff --git a/OvmfPkg/Library/BaseMemEncryptSevLib/DxeMemEncryptSevLib.inf b/OvmfPkg/Library/BaseMemEncryptSevLib/DxeMemEncryptSevLib.inf
-index 2d783ede8..53d65f604 100644
+index 2d783ede8..37f9dde85 100644
 --- a/OvmfPkg/Library/BaseMemEncryptSevLib/DxeMemEncryptSevLib.inf
 +++ b/OvmfPkg/Library/BaseMemEncryptSevLib/DxeMemEncryptSevLib.inf
 @@ -21,7 +21,7 @@
@@ -104,17 +104,16 @@ index 2d783ede8..53d65f604 100644
  #
  
  [Packages]
-@@ -33,7 +33,8 @@
- [Sources]
+@@ -34,6 +34,8 @@
    DxeMemEncryptSevLibInternal.c
    PeiDxeMemEncryptSevLibInternal.c
--  PeiDxeMemEncryptSevLibInternal.h
+   PeiDxeMemEncryptSevLibInternal.h
 +
 +[Sources.X64]
    X64/DxeSnpSystemRamValidate.c
    X64/MemEncryptSevLib.c
    X64/PeiDxeVirtualMemory.c
-@@ -41,6 +42,9 @@
+@@ -41,6 +43,9 @@
    X64/VirtualMemory.c
    X64/VirtualMemory.h
  
