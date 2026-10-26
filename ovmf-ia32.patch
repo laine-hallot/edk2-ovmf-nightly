@@ -539,7 +539,7 @@ index 950b92184..dedb5a159 100644
 +  gEfiXenInfoGuid
 diff --git a/OvmfPkg/OvmfPkgIa32.dsc b/OvmfPkg/OvmfPkgIa32.dsc
 new file mode 100644
-index 000000000..5c6652a58
+index 000000000..d35745814
 --- /dev/null
 +++ b/OvmfPkg/OvmfPkgIa32.dsc
 @@ -0,0 +1,941 @@
@@ -1486,10 +1486,10 @@ index 000000000..5c6652a58
 +!endif
 diff --git a/OvmfPkg/OvmfPkgIa32.fdf b/OvmfPkg/OvmfPkgIa32.fdf
 new file mode 100644
-index 000000000..170deb862
+index 000000000..a834e9b43
 --- /dev/null
 +++ b/OvmfPkg/OvmfPkgIa32.fdf
-@@ -0,0 +1,495 @@
+@@ -0,0 +1,496 @@
 +## @file
 +#  Open Virtual Machine Firmware: FDF
 +#
@@ -1797,6 +1797,7 @@ index 000000000..170deb862
 +INF  MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
 +INF  MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
 +INF  MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
++INF  MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf
 +INF  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
 +
 +INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
@@ -2075,10 +2076,10 @@ index f69b8e60b..5f2760148 100644
  
  [Depex]
 diff --git a/OvmfPkg/XenPlatformPei/MemDetect.c b/OvmfPkg/XenPlatformPei/MemDetect.c
-index 516f9dc45..e552e7a55 100644
+index 7eaa655bc..81d823d8b 100644
 --- a/OvmfPkg/XenPlatformPei/MemDetect.c
 +++ b/OvmfPkg/XenPlatformPei/MemDetect.c
-@@ -215,6 +215,16 @@ GetPeiMemoryCap (
+@@ -211,6 +211,16 @@ GetPeiMemoryCap (
    UINT32   PdpEntries;
    UINTN    TotalPages;
  
