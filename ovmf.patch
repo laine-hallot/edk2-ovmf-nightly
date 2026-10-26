@@ -35,7 +35,7 @@ index b8c54c915..2f4ac4098 100644
    gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|480
  
 diff --git a/ArmVirtPkg/ArmVirtQemu.dsc b/ArmVirtPkg/ArmVirtQemu.dsc
-index 7b75ff884..f2e13a54c 100644
+index 7b75ff884..07cfdffb5 100644
 --- a/ArmVirtPkg/ArmVirtQemu.dsc
 +++ b/ArmVirtPkg/ArmVirtQemu.dsc
 @@ -44,7 +44,8 @@
@@ -60,7 +60,18 @@ index 7b75ff884..f2e13a54c 100644
  # This comes at the beginning of includes to pick all relevant defines early on.
  !include ArmVirtPkg/ArmVirtStackCookies.dsc.inc
  
-@@ -376,6 +382,15 @@
+@@ -150,6 +156,10 @@
+ 
+   gEfiMdeModulePkgTokenSpaceGuid.PcdTurnOffUsbLegacySupport|TRUE
+ 
++!if $(SECURE_BOOT_ENABLE) == TRUE
++  gEfiMdeModulePkgTokenSpaceGuid.PcdRequireSelfSignedPk|FALSE
++!endif
++
+   gArmVirtTokenSpaceGuid.PcdTpm2SupportEnabled|$(TPM2_ENABLE)
+ 
+ !if $(QEMU_PV_VARS) == TRUE
+@@ -376,6 +386,15 @@
  !include NetworkPkg/NetworkComponents.dsc.inc
  !include OvmfPkg/Include/Dsc/NetworkComponents.dsc.inc
  
@@ -76,7 +87,7 @@ index 7b75ff884..f2e13a54c 100644
    #
    # NVME Driver
    #
-@@ -427,6 +442,7 @@
+@@ -427,6 +446,7 @@
  !if $(TPM2_CONFIG_ENABLE) == TRUE
    SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
  !endif
@@ -625,7 +636,7 @@ index dd42cf005..a5314821c 100644
  
  INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
 diff --git a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc b/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
-index 341c40074..9e86912d0 100644
+index 341c40074..ccac6ca07 100644
 --- a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
 +++ b/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
 @@ -56,7 +56,8 @@
@@ -660,7 +671,18 @@ index 341c40074..9e86912d0 100644
    PlatformBmPrintScLib|OvmfPkg/Library/PlatformBmPrintScLib/PlatformBmPrintScLib.inf
    CustomizedDisplayLib|MdeModulePkg/Library/CustomizedDisplayLib/CustomizedDisplayLib.inf
    FrameBufferBltLib|MdeModulePkg/Library/FrameBufferBltLib/FrameBufferBltLib.inf
-@@ -241,7 +248,8 @@
+@@ -212,6 +219,10 @@
+ 
+   gEfiMdeModulePkgTokenSpaceGuid.PcdTurnOffUsbLegacySupport|TRUE
+ 
++!if $(SECURE_BOOT_ENABLE) == TRUE
++  gEfiMdeModulePkgTokenSpaceGuid.PcdRequireSelfSignedPk|FALSE
++!endif
++
+ !if $(QEMU_PV_VARS) == TRUE
+   gUefiOvmfPkgTokenSpaceGuid.PcdQemuVarsRequire|TRUE
+   gEfiMdeModulePkgTokenSpaceGuid.PcdEnableVariableRuntimeCache|FALSE
+@@ -241,7 +252,8 @@
    gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterStride|1
  
    gEfiMdeModulePkgTokenSpaceGuid.PcdResetOnMemoryTypeInformationChange|FALSE
@@ -670,7 +692,7 @@ index 341c40074..9e86912d0 100644
  
  !if $(SECURE_BOOT_ENABLE) == TRUE
    # override the default values from SecurityPkg to ensure images from all sources are verified in secure boot
-@@ -259,7 +267,7 @@
+@@ -259,7 +271,7 @@
    gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosEntryPointProvideMethod|0x2
  
  [PcdsDynamicDefault.common]
@@ -679,7 +701,7 @@ index 341c40074..9e86912d0 100644
  
    ## If TRUE, OvmfPkg/AcpiPlatformDxe will not wait for PCI
    #  enumeration to complete before installing ACPI tables.
-@@ -313,7 +321,7 @@
+@@ -313,7 +325,7 @@
    gEfiSecurityPkgTokenSpaceGuid.PcdTpm2AcpiTableRev|L"TCG2_VERSION"|gTcg2ConfigFormSetGuid|0x8|3|NV,BS
  !endif
  
@@ -688,7 +710,7 @@ index 341c40074..9e86912d0 100644
  
  ################################################################################
  #
-@@ -454,8 +462,8 @@
+@@ -454,8 +466,8 @@
    OvmfPkg/Fdt/HighMemDxe/HighMemDxe.inf
    OvmfPkg/VirtioBlkDxe/VirtioBlk.inf
    OvmfPkg/VirtioScsiDxe/VirtioScsi.inf
@@ -698,7 +720,7 @@ index 341c40074..9e86912d0 100644
  
    #
    # Hash2 protocol, needed to dispatch TcpDxe
-@@ -492,26 +500,13 @@
+@@ -492,26 +504,13 @@
        NULL|MdeModulePkg/Library/BootManagerUiLib/BootManagerUiLib.inf
        NULL|MdeModulePkg/Library/BootMaintenanceManagerUiLib/BootMaintenanceManagerUiLib.inf
    }
@@ -727,7 +749,7 @@ index 341c40074..9e86912d0 100644
  
    #
    # SCSI Bus and Disk Driver
-@@ -526,6 +521,8 @@
+@@ -526,6 +525,8 @@
    MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
    MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
  
@@ -736,7 +758,7 @@ index 341c40074..9e86912d0 100644
    #
    # NVME Driver
    #
-@@ -562,17 +559,13 @@
+@@ -562,17 +563,13 @@
    OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
    OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
    OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
@@ -756,7 +778,7 @@ index 341c40074..9e86912d0 100644
  
    #
    # TPM2 support
-@@ -592,6 +585,7 @@
+@@ -592,6 +589,7 @@
  !if $(TPM2_CONFIG_ENABLE) == TRUE
    SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
  !endif
