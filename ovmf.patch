@@ -345,49 +345,21 @@ index dd42cf005..a5314821c 100644
  INF  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
  
  INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
-diff --git a/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBm.c b/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBm.c
-index 44fd21f74..36686053f 100644
---- a/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBm.c
-+++ b/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBm.c
-@@ -13,6 +13,7 @@
- #include <IndustryStandard/Virtio095.h>
- #include <Library/BootLogoLib.h>
- #include <Library/DevicePathLib.h>
-+#include <Library/DxeServicesTableLib.h>
- #include <Library/PcdLib.h>
- #include <Library/PlatformBmPrintScLib.h>
- #include <Library/QemuBootOrderLib.h>
-@@ -901,6 +902,13 @@ PlatformBootManagerBeforeConsole (
-   // instances on Virtio PCI RNG devices.
-   //
-   FilterAndProcess (&gEfiPciIoProtocolGuid, IsVirtioPciRng, Connect);
-+
-+  //
-+  // Dispatch the drivers that depend on EFI_RNG_PROTOCOL, such as the network
-+  // stack, so that connecting the boot devices from QEMU's boot order binds
-+  // them, rather than only a later connect-all.
-+  //
-+  gDS->Dispatch ();
- }
- 
- /**
-diff --git a/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf b/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
-index 9d66c8110..529af8d42 100644
---- a/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
-+++ b/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
-@@ -39,6 +39,7 @@
-   BootLogoLib
-   DebugLib
-   DevicePathLib
-+  DxeServicesTableLib
-   MemoryAllocationLib
-   PcdLib
-   PlatformBmPrintScLib
 diff --git a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc b/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
-index 341c40074..f33a493a3 100644
+index 341c40074..5a5917ce2 100644
 --- a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
 +++ b/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
-@@ -259,7 +259,7 @@
+@@ -120,7 +120,8 @@
+ 
+   CapsuleLib|MdeModulePkg/Library/DxeCapsuleLibNull/DxeCapsuleLibNull.inf
+   BootLogoLib|MdeModulePkg/Library/BootLogoLib/BootLogoLib.inf
+-  PlatformBootManagerLib|OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
++  PlatformBootManagerLib|OvmfPkg/Library/PlatformBootManagerLibLight/PlatformBootManagerLib.inf
++  PlatformBootManagerCommonLib|OvmfPkg/Library/PlatformBootManagerCommonLib/PlatformBootManagerCommonLib.inf
+   PlatformBmPrintScLib|OvmfPkg/Library/PlatformBmPrintScLib/PlatformBmPrintScLib.inf
+   CustomizedDisplayLib|MdeModulePkg/Library/CustomizedDisplayLib/CustomizedDisplayLib.inf
+   FrameBufferBltLib|MdeModulePkg/Library/FrameBufferBltLib/FrameBufferBltLib.inf
+@@ -259,7 +260,7 @@
    gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosEntryPointProvideMethod|0x2
  
  [PcdsDynamicDefault.common]
@@ -396,7 +368,7 @@ index 341c40074..f33a493a3 100644
  
    ## If TRUE, OvmfPkg/AcpiPlatformDxe will not wait for PCI
    #  enumeration to complete before installing ACPI tables.
-@@ -313,7 +313,7 @@
+@@ -313,7 +314,7 @@
    gEfiSecurityPkgTokenSpaceGuid.PcdTpm2AcpiTableRev|L"TCG2_VERSION"|gTcg2ConfigFormSetGuid|0x8|3|NV,BS
  !endif
  
@@ -405,7 +377,7 @@ index 341c40074..f33a493a3 100644
  
  ################################################################################
  #
-@@ -562,6 +562,7 @@
+@@ -562,6 +563,7 @@
    OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
    OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
    OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
@@ -413,7 +385,7 @@ index 341c40074..f33a493a3 100644
    OvmfPkg/PlatformDxe/Platform.inf
  
    #
-@@ -572,6 +573,7 @@
+@@ -572,6 +574,7 @@
    MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
    MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
    MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
