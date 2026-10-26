@@ -35,7 +35,7 @@ index b8c54c915..2f4ac4098 100644
    gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|480
  
 diff --git a/ArmVirtPkg/ArmVirtQemu.dsc b/ArmVirtPkg/ArmVirtQemu.dsc
-index 7b75ff884..07cfdffb5 100644
+index 7b75ff884..f404f4f27 100644
 --- a/ArmVirtPkg/ArmVirtQemu.dsc
 +++ b/ArmVirtPkg/ArmVirtQemu.dsc
 @@ -44,7 +44,8 @@
@@ -71,7 +71,15 @@ index 7b75ff884..07cfdffb5 100644
    gArmVirtTokenSpaceGuid.PcdTpm2SupportEnabled|$(TPM2_ENABLE)
  
  !if $(QEMU_PV_VARS) == TRUE
-@@ -376,6 +386,15 @@
+@@ -339,6 +349,7 @@
+   #
+   # Architectural Protocols
+   #
++  MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
+   MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf {
+     <LibraryClasses>
+       NULL|EmbeddedPkg/Library/NvVarStoreFormattedLib/NvVarStoreFormattedLib.inf
+@@ -376,6 +387,15 @@
  !include NetworkPkg/NetworkComponents.dsc.inc
  !include OvmfPkg/Include/Dsc/NetworkComponents.dsc.inc
  
@@ -87,7 +95,7 @@ index 7b75ff884..07cfdffb5 100644
    #
    # NVME Driver
    #
-@@ -427,6 +446,7 @@
+@@ -427,6 +447,7 @@
  !if $(TPM2_CONFIG_ENABLE) == TRUE
    SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
  !endif
@@ -96,10 +104,18 @@ index 7b75ff884..07cfdffb5 100644
  
    #
 diff --git a/ArmVirtPkg/ArmVirtQemuFvMain.fdf.inc b/ArmVirtPkg/ArmVirtQemuFvMain.fdf.inc
-index 98b6261d7..6e1c82623 100644
+index 98b6261d7..a491fdcbe 100644
 --- a/ArmVirtPkg/ArmVirtQemuFvMain.fdf.inc
 +++ b/ArmVirtPkg/ArmVirtQemuFvMain.fdf.inc
-@@ -138,6 +138,15 @@ READ_LOCK_STATUS   = TRUE
+@@ -50,6 +50,7 @@ READ_LOCK_STATUS   = TRUE
+   INF ArmPkg/Drivers/CpuDxe/CpuDxe.inf
+   INF MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
+   INF MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
++  INF MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
+   INF MdeModulePkg/Universal/CapsuleRuntimeDxe/CapsuleRuntimeDxe.inf
+   INF MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
+ !if $(QEMU_PV_VARS) == TRUE
+@@ -138,6 +139,15 @@ READ_LOCK_STATUS   = TRUE
    INF MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
    INF MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
  
@@ -115,7 +131,7 @@ index 98b6261d7..6e1c82623 100644
    #
    # NVME Driver
    #
-@@ -182,6 +191,7 @@ READ_LOCK_STATUS   = TRUE
+@@ -182,6 +192,7 @@ READ_LOCK_STATUS   = TRUE
    INF MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
    INF MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
    INF MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
@@ -123,7 +139,7 @@ index 98b6261d7..6e1c82623 100644
    INF MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
  
    #
-@@ -194,6 +204,7 @@ READ_LOCK_STATUS   = TRUE
+@@ -194,6 +205,7 @@ READ_LOCK_STATUS   = TRUE
    #
  !if $(TPM2_ENABLE) == TRUE
    INF SecurityPkg/Tcg/Tcg2Dxe/Tcg2Dxe.inf
@@ -132,7 +148,7 @@ index 98b6261d7..6e1c82623 100644
    INF SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
  !endif
 diff --git a/ArmVirtPkg/ArmVirtQemuKernel.dsc b/ArmVirtPkg/ArmVirtQemuKernel.dsc
-index 9758401a9..ac7f1669c 100644
+index 9758401a9..037ccc7cf 100644
 --- a/ArmVirtPkg/ArmVirtQemuKernel.dsc
 +++ b/ArmVirtPkg/ArmVirtQemuKernel.dsc
 @@ -50,6 +50,11 @@
@@ -167,7 +183,15 @@ index 9758401a9..ac7f1669c 100644
    gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoHorizontalResolution|640
    gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|480
    gEfiMdeModulePkgTokenSpaceGuid.PcdConOutRow|0
-@@ -265,6 +270,15 @@
+@@ -231,6 +236,7 @@
+   #
+   # Architectural Protocols
+   #
++  MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
+   MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf {
+     <LibraryClasses>
+       NULL|EmbeddedPkg/Library/NvVarStoreFormattedLib/NvVarStoreFormattedLib.inf
+@@ -265,6 +271,15 @@
  !include NetworkPkg/NetworkComponents.dsc.inc
  !include OvmfPkg/Include/Dsc/NetworkComponents.dsc.inc
  
