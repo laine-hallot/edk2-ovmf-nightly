@@ -71,6 +71,86 @@ index 0b7574485..91cceb889 100644
  
  ################################################################################
  #
+diff --git a/ArmVirtPkg/Library/PlatformPeiLib/PlatformPeiLib.c b/ArmVirtPkg/Library/PlatformPeiLib/PlatformPeiLib.c
+index e039810dc..e2c00c10b 100644
+--- a/ArmVirtPkg/Library/PlatformPeiLib/PlatformPeiLib.c
++++ b/ArmVirtPkg/Library/PlatformPeiLib/PlatformPeiLib.c
+@@ -8,7 +8,9 @@
+ **/
+ 
+ #include <PiPei.h>
++#include <Uefi/UefiSpec.h>
+ 
++#include <Library/ArmMmuLib.h>
+ #include <Library/BaseLib.h>
+ #include <Library/BaseMemoryLib.h>
+ #include <Library/MemoryAllocationLib.h>
+@@ -107,6 +109,8 @@ PlatformPeim (
+   CONST UINT64              *RegProp;
+   CONST UINT32              *RangesProp;
+   UINT64                    TpmBase;
++  UINT64                    TpmSize;
++  UINT64                    MappingBase;
+   EFI_STATUS                Status;
+   CHAR8                     DebugLevelBuf[32];
+   UINTN                     DebugLevelBufSize;
+@@ -197,6 +201,7 @@ PlatformPeim (
+                                  );
+ 
+   TpmBase = 0;
++  TpmSize = 0;
+ 
+   //
+   // Set Parent to suppress incorrect compiler/analyzer warnings.
+@@ -228,8 +233,10 @@ PlatformPeim (
+         ASSERT (Len == 8 || Len == 16);
+         if (Len == 8) {
+           TpmBase = Fdt32ToCpu (RegProp[0]);
++          TpmSize = Fdt32ToCpu (((CONST UINT32 *)RegProp)[1]);
+         } else if (Len == 16) {
+           TpmBase = Fdt64ToCpu (ReadUnaligned64 ((UINT64 *)RegProp));
++          TpmSize = Fdt64ToCpu (ReadUnaligned64 ((UINT64 *)RegProp + 1));
+         }
+ 
+         if (Depth > 1) {
+@@ -283,6 +290,19 @@ PlatformPeim (
+     if (TpmBase != 0) {
+       DEBUG ((DEBUG_INFO, "%a: TPM @ 0x%lx\n", __func__, TpmBase));
+ 
++      //
++      // The initial memory map does not cover the TPM, so map it before
++      // Tcg2ConfigPei probes it. DXE inherits the mapping.
++      //
++      MappingBase = TpmBase & ~(UINT64)EFI_PAGE_MASK;
++      Status      = ArmSetMemoryAttributes (
++                      MappingBase,
++                      ALIGN_VALUE (TpmBase + TpmSize - MappingBase, EFI_PAGE_SIZE),
++                      EFI_MEMORY_UC,
++                      0
++                      );
++      ASSERT_EFI_ERROR (Status);
++
+       Status = (EFI_STATUS)PcdSet64S (PcdTpmBaseAddress, TpmBase);
+       ASSERT_EFI_ERROR (Status);
+ 
+diff --git a/ArmVirtPkg/Library/PlatformPeiLib/PlatformPeiLib.inf b/ArmVirtPkg/Library/PlatformPeiLib/PlatformPeiLib.inf
+index 731d94033..8710a0071 100644
+--- a/ArmVirtPkg/Library/PlatformPeiLib/PlatformPeiLib.inf
++++ b/ArmVirtPkg/Library/PlatformPeiLib/PlatformPeiLib.inf
+@@ -25,11 +25,13 @@
+   MdePkg/MdePkg.dec
+   OvmfPkg/OvmfPkg.dec
+   SecurityPkg/SecurityPkg.dec
++  UefiCpuPkg/UefiCpuPkg.dec
+ 
+ [FeaturePcd]
+   gArmVirtTokenSpaceGuid.PcdTpm2SupportEnabled
+ 
+ [LibraryClasses]
++  ArmMmuLib
+   BaseLib
+   BaseMemoryLib
+   DebugLib
 diff --git a/EmulatorPkg/EmulatorPkg.dsc b/EmulatorPkg/EmulatorPkg.dsc
 index 6f52b2d95..8c0d36341 100644
 --- a/EmulatorPkg/EmulatorPkg.dsc
@@ -129,6 +209,44 @@ index be2ddacaa..118fc7856 100644
    gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiS3Enable|FALSE
    gUefiOvmfPkgTokenSpaceGuid.PcdOvmfHostBridgePciDevId|0
    gUefiOvmfPkgTokenSpaceGuid.PcdPciIoBase|0x0
+diff --git a/OvmfPkg/Library/PlatformBootManagerLibLight/PlatformBm.c b/OvmfPkg/Library/PlatformBootManagerLibLight/PlatformBm.c
+index 7c5fe74b2..5040ad7e2 100644
+--- a/OvmfPkg/Library/PlatformBootManagerLibLight/PlatformBm.c
++++ b/OvmfPkg/Library/PlatformBootManagerLibLight/PlatformBm.c
+@@ -13,6 +13,7 @@
+ #include <IndustryStandard/Virtio095.h>
+ #include <Library/BootLogoLib.h>
+ #include <Library/DevicePathLib.h>
++#include <Library/DxeServicesTableLib.h>
+ #include <Library/PcdLib.h>
+ #include <Library/PlatformBmPrintScLib.h>
+ #include <Library/QemuBootOrderLib.h>
+@@ -995,6 +996,13 @@ PlatformBootManagerBeforeConsole (
+   //
+   FilterAndProcess (&gEfiPciIoProtocolGuid, IsVirtioPciRng, Connect);
+ 
++  //
++  // Dispatch the drivers that depend on EFI_RNG_PROTOCOL, such as the network
++  // stack, so that connecting the boot devices from QEMU's boot order binds
++  // them, rather than only a later connect-all.
++  //
++  gDS->Dispatch ();
++
+   //
+   // Register Virtio serial devices as console.
+   //
+diff --git a/OvmfPkg/Library/PlatformBootManagerLibLight/PlatformBootManagerLib.inf b/OvmfPkg/Library/PlatformBootManagerLibLight/PlatformBootManagerLib.inf
+index 9e89556b1..ad08c1628 100644
+--- a/OvmfPkg/Library/PlatformBootManagerLibLight/PlatformBootManagerLib.inf
++++ b/OvmfPkg/Library/PlatformBootManagerLibLight/PlatformBootManagerLib.inf
+@@ -41,6 +41,7 @@
+   BootLogoLib
+   DebugLib
+   DevicePathLib
++  DxeServicesTableLib
+   MemoryAllocationLib
+   PcdLib
+   PlatformBmPrintScLib
 diff --git a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc b/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
 index 8f0ef8547..943f1d9fb 100644
 --- a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
@@ -175,6 +293,44 @@ index cecc7b0b7..4fca4ebce 100644
  INF  OvmfPkg/PlatformDxe/Platform.inf
  
  #
+diff --git a/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBm.c b/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBm.c
+index 44fd21f74..36686053f 100644
+--- a/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBm.c
++++ b/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBm.c
+@@ -13,6 +13,7 @@
+ #include <IndustryStandard/Virtio095.h>
+ #include <Library/BootLogoLib.h>
+ #include <Library/DevicePathLib.h>
++#include <Library/DxeServicesTableLib.h>
+ #include <Library/PcdLib.h>
+ #include <Library/PlatformBmPrintScLib.h>
+ #include <Library/QemuBootOrderLib.h>
+@@ -901,6 +902,13 @@ PlatformBootManagerBeforeConsole (
+   // instances on Virtio PCI RNG devices.
+   //
+   FilterAndProcess (&gEfiPciIoProtocolGuid, IsVirtioPciRng, Connect);
++
++  //
++  // Dispatch the drivers that depend on EFI_RNG_PROTOCOL, such as the network
++  // stack, so that connecting the boot devices from QEMU's boot order binds
++  // them, rather than only a later connect-all.
++  //
++  gDS->Dispatch ();
+ }
+ 
+ /**
+diff --git a/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf b/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
+index 9d66c8110..529af8d42 100644
+--- a/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
++++ b/OvmfPkg/RiscVVirt/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
+@@ -39,6 +39,7 @@
+   BootLogoLib
+   DebugLib
+   DevicePathLib
++  DxeServicesTableLib
+   MemoryAllocationLib
+   PcdLib
+   PlatformBmPrintScLib
 diff --git a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc b/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
 index acbf161f0..7dea099be 100644
 --- a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
