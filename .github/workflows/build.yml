@@ -115,19 +115,19 @@ jobs:
         run: echo "TAG_DATE=$(date -u +'%Y%m%dT%H%M%SZ')" >> $GITHUB_ENV
 
       - name: Rename output directory
-        run: mv output edk2-ovmf
+        run: mv output edk2-ovmf-bins
 
       - name: Create release tarball
         run: |
           set -e
           for f in ovmf-code-aarch64 ovmf-vars-aarch64 ovmf-code-aarch64-secboot ovmf-vars-aarch64-secboot; do
-              dd if=/dev/zero of=edk2-ovmf/$f.fd bs=1 count=0 seek=67108864
+              dd if=/dev/zero of=edk2-ovmf-bins/$f.fd bs=1 count=0 seek=67108864
           done
           for f in ovmf-code-riscv64 ovmf-vars-riscv64 ovmf-code-riscv64-secboot ovmf-vars-riscv64-secboot; do
-              dd if=/dev/zero of=edk2-ovmf/$f.fd bs=1 count=0 seek=33554432
+              dd if=/dev/zero of=edk2-ovmf-bins/$f.fd bs=1 count=0 seek=33554432
           done
-          tar -zcvf edk2-ovmf.tar.gz edk2-ovmf
-          tar -Jcvf edk2-ovmf.tar.xz edk2-ovmf
+          tar -zcvf edk2-ovmf-bins.tar.gz edk2-ovmf-bins
+          tar -Jcvf edk2-ovmf-bins.tar.xz edk2-ovmf-bins
 
       - name: Tag new release
         run: git tag $TAG_DATE && git push --tags
@@ -139,7 +139,7 @@ jobs:
           tag_name: ${{ env.TAG_DATE }}
           body: Binary images of an up to date EDK2 OVMF nightly build (upstream commit `${{ env.EDK2_UPSTREAM_COMMIT }}`).
           files: |
-            edk2-ovmf.tar.gz
-            edk2-ovmf.tar.xz
+            edk2-ovmf-bins.tar.gz
+            edk2-ovmf-bins.tar.xz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
