@@ -348,7 +348,7 @@ index 9e89556b1..ad08c1628 100644
    PcdLib
    PlatformBmPrintScLib
 diff --git a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc b/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
-index 96577eebe..837d9c002 100644
+index 96577eebe..a440c07ef 100644
 --- a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
 +++ b/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
 @@ -51,6 +51,11 @@
@@ -431,7 +431,7 @@ index 96577eebe..837d9c002 100644
    #
    # NVME Driver
    #
-@@ -783,6 +788,7 @@
+@@ -783,17 +788,13 @@
    OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
    OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
    OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
@@ -439,14 +439,18 @@ index 96577eebe..837d9c002 100644
    OvmfPkg/PlatformDxe/Platform.inf
  
    #
-@@ -793,6 +799,7 @@
-   MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
-   MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
-   MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
-+  MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf
-   MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+   # Usb Support
+   #
+-  MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf
+-  MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
+-  MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
+-  MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+-  MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
+-  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
++!include OvmfPkg/Include/Dsc/UsbComponents.dsc.inc
  
    #
+   # ACPI Support
 diff --git a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.fdf b/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.fdf
 index a5c00af79..0c0717c18 100644
 --- a/OvmfPkg/LoongArchVirt/LoongArchVirtQemu.fdf
@@ -505,7 +509,7 @@ index dd42cf005..a5314821c 100644
  
  INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
 diff --git a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc b/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
-index 341c40074..cbc4d9714 100644
+index 341c40074..0caba0366 100644
 --- a/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
 +++ b/OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc
 @@ -69,6 +69,11 @@
@@ -583,7 +587,7 @@ index 341c40074..cbc4d9714 100644
    #
    # NVME Driver
    #
-@@ -562,6 +573,7 @@
+@@ -562,17 +573,13 @@
    OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
    OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
    OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
@@ -591,14 +595,18 @@ index 341c40074..cbc4d9714 100644
    OvmfPkg/PlatformDxe/Platform.inf
  
    #
-@@ -572,6 +584,7 @@
-   MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
-   MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
-   MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
-+  MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf
-   MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+   # USB Support
+   #
+-  MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf
+-  MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
+-  MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
+-  MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+-  MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
+-  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
++!include OvmfPkg/Include/Dsc/UsbComponents.dsc.inc
  
    #
+   # TPM2 support
 diff --git a/OvmfPkg/RiscVVirt/RiscVVirtQemu.fdf b/OvmfPkg/RiscVVirt/RiscVVirtQemu.fdf
 index 80009fc09..081d31a98 100644
 --- a/OvmfPkg/RiscVVirt/RiscVVirtQemu.fdf
