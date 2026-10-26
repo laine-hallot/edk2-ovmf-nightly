@@ -539,10 +539,10 @@ index 950b92184..dedb5a159 100644
 +  gEfiXenInfoGuid
 diff --git a/OvmfPkg/OvmfPkgIa32.dsc b/OvmfPkg/OvmfPkgIa32.dsc
 new file mode 100644
-index 000000000..d35745814
+index 000000000..62954d17b
 --- /dev/null
 +++ b/OvmfPkg/OvmfPkgIa32.dsc
-@@ -0,0 +1,941 @@
+@@ -0,0 +1,987 @@
 +## @file
 +#  EFI/Framework Open Virtual Machine Firmware (OVMF) platform
 +#
@@ -577,6 +577,7 @@ index 000000000..d35745814
 +  DEFINE SECURE_BOOT_ENABLE      = FALSE
 +  DEFINE SMM_REQUIRE             = FALSE
 +  DEFINE SOURCE_DEBUG_ENABLE     = FALSE
++  DEFINE DEBUG_TO_MEM            = FALSE
 +  DEFINE LOAD_X64_ON_IA32_ENABLE = FALSE
 +
 +!include OvmfPkg/Include/Dsc/OvmfTpmDefines.dsc.inc
@@ -594,6 +595,7 @@ index 000000000..d35745814
 +  DEFINE NETWORK_HTTP_BOOT_ENABLE       = FALSE
 +  DEFINE NETWORK_ALLOW_HTTP_CONNECTIONS = TRUE
 +  DEFINE NETWORK_ISCSI_ENABLE           = TRUE
++  DEFINE NETWORK_ISCSI_DEFAULT_ENABLE   = FALSE
 +  DEFINE NETWORK_PXE_BOOT_ENABLE        = TRUE
 +
 +!include NetworkPkg/NetworkDefines.dsc.inc
@@ -642,7 +644,7 @@ index 000000000..d35745814
 +
 +!include NetworkPkg/NetworkBuildOptions.dsc.inc
 +
-+[BuildOptions.common.EDKII.DXE_RUNTIME_DRIVER]
++[BuildOptions.common.EDKII.DXE_RUNTIME_DRIVER, BuildOptions.common.EDKII.DXE_DRIVER, BuildOptions.common.EDKII.UEFI_DRIVER, BuildOptions.common.EDKII.DXE_CORE, BuildOptions.common.EDKII.UEFI_APPLICATION]
 +  GCC:*_*_*_DLINK_FLAGS = -z common-page-size=0x1000
 +  XCODE:*_*_*_DLINK_FLAGS = -seg1addr 0x1000 -segalign 0x1000
 +  XCODE:*_*_*_MTOC_FLAGS = -align 0x1000
@@ -673,6 +675,7 @@ index 000000000..d35745814
 +!include MdePkg/MdeLibs.dsc.inc
 +
 +[LibraryClasses]
++  GptLib|MdeModulePkg/Library/GptLib/GptLib.inf
 +  SmmRelocationLib|OvmfPkg/Library/SmmRelocationLib/SmmRelocationLib.inf
 +  PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
 +  TimerLib|OvmfPkg/Library/AcpiTimerLib/BaseAcpiTimerLib.inf
@@ -693,7 +696,6 @@ index 000000000..d35745814
 +  HiiLib|MdeModulePkg/Library/UefiHiiLib/UefiHiiLib.inf
 +  SortLib|MdeModulePkg/Library/UefiSortLib/UefiSortLib.inf
 +  UefiBootManagerLib|MdeModulePkg/Library/UefiBootManagerLib/UefiBootManagerLib.inf
-+  GptLib|MdeModulePkg/Library/GptLib/GptLib.inf
 +  BootLogoLib|MdeModulePkg/Library/BootLogoLib/BootLogoLib.inf
 +  FileExplorerLib|MdeModulePkg/Library/FileExplorerLib/FileExplorerLib.inf
 +  CapsuleLib|MdeModulePkg/Library/DxeCapsuleLibNull/DxeCapsuleLibNull.inf
@@ -790,7 +792,11 @@ index 000000000..d35745814
 +  TdxLib|MdePkg/Library/TdxLib/TdxLib.inf
 +  TdxMailboxLib|OvmfPkg/Library/TdxMailboxLib/TdxMailboxLibNull.inf
 +  TdxHelperLib|OvmfPkg/IntelTdx/TdxHelperLib/TdxHelperLibNull.inf
++!if $(DEBUG_TO_MEM)
++  MemDebugLogLib|OvmfPkg/Library/MemDebugLogLib/MemDebugLogDxeLib.inf
++!else
 +  MemDebugLogLib|OvmfPkg/Library/MemDebugLogLib/MemDebugLogLibNull.inf
++!endif
 +
 +[LibraryClasses.common.SEC]
 +  TimerLib|OvmfPkg/Library/AcpiTimerLib/BaseRomAcpiTimerLib.inf
@@ -799,6 +805,9 @@ index 000000000..d35745814
 +  DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
 +!else
 +  DebugLib|OvmfPkg/Library/PlatformDebugLibIoPort/PlatformRomDebugLibIoPort.inf
++!endif
++!if $(DEBUG_TO_MEM)
++  MemDebugLogLib|OvmfPkg/Library/MemDebugLogLib/MemDebugLogSecLib.inf
 +!endif
 +  ReportStatusCodeLib|MdeModulePkg/Library/PeiReportStatusCodeLib/PeiReportStatusCodeLib.inf
 +  ExtractGuidedSectionLib|MdePkg/Library/BaseExtractGuidedSectionLib/BaseExtractGuidedSectionLib.inf
@@ -826,7 +835,11 @@ index 000000000..d35745814
 +!else
 +  DebugLib|OvmfPkg/Library/PlatformDebugLibIoPort/PlatformRomDebugLibIoPort.inf
 +!endif
++!if $(DEBUG_TO_MEM)
++  MemDebugLogLib|OvmfPkg/Library/MemDebugLogLib/MemDebugLogPeiCoreLib.inf
++!endif
 +  PeCoffLib|MdePkg/Library/BasePeCoffLib/BasePeCoffLib.inf
++  TimerLib|OvmfPkg/Library/AcpiTimerLib/BaseRomAcpiTimerLib.inf
 +
 +[LibraryClasses.common.PEIM]
 +  HobLib|MdePkg/Library/PeiHobLib/PeiHobLib.inf
@@ -842,6 +855,9 @@ index 000000000..d35745814
 +!else
 +  DebugLib|OvmfPkg/Library/PlatformDebugLibIoPort/PlatformRomDebugLibIoPort.inf
 +!endif
++!if $(DEBUG_TO_MEM)
++  MemDebugLogLib|OvmfPkg/Library/MemDebugLogLib/MemDebugLogPeiCoreLib.inf
++!endif
 +  PeCoffLib|MdePkg/Library/BasePeCoffLib/BasePeCoffLib.inf
 +  ResourcePublicationLib|MdePkg/Library/PeiResourcePublicationLib/PeiResourcePublicationLib.inf
 +  ExtractGuidedSectionLib|MdePkg/Library/PeiExtractGuidedSectionLib/PeiExtractGuidedSectionLib.inf
@@ -852,6 +868,7 @@ index 000000000..d35745814
 +  MpInitLib|UefiCpuPkg/Library/MpInitLib/PeiMpInitLib.inf
 +  QemuFwCfgS3Lib|OvmfPkg/Library/QemuFwCfgS3Lib/PeiQemuFwCfgS3LibFwCfg.inf
 +  PcdLib|MdePkg/Library/PeiPcdLib/PeiPcdLib.inf
++  TimerLib|OvmfPkg/Library/AcpiTimerLib/BaseRomAcpiTimerLib.inf
 +  QemuFwCfgLib|OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgPeiLib.inf
 +  PlatformInitLib|OvmfPkg/Library/PlatformInitLib/PlatformInitLib.inf
 +
@@ -886,6 +903,9 @@ index 000000000..d35745814
 +  DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
 +!else
 +  DebugLib|OvmfPkg/Library/PlatformDebugLibIoPort/PlatformDebugLibIoPort.inf
++!endif
++!if $(DEBUG_TO_MEM)
++  MemDebugLogLib|OvmfPkg/Library/MemDebugLogLib/MemDebugLogRtLib.inf
 +!endif
 +  UefiRuntimeLib|MdePkg/Library/UefiRuntimeLib/UefiRuntimeLib.inf
 +  BaseCryptLib|CryptoPkg/Library/BaseCryptLib/RuntimeCryptLib.inf
@@ -981,8 +1001,6 @@ index 000000000..d35745814
 +  BaseCryptLib|CryptoPkg/Library/BaseCryptLib/SmmCryptLib.inf
 +  PciLib|OvmfPkg/Library/DxePciLibI440FxQ35/DxePciLibI440FxQ35.inf
 +  SmmCpuRendezvousLib|UefiCpuPkg/Library/SmmCpuRendezvousLib/SmmCpuRendezvousLib.inf
-+  MmSaveStateLib|UefiCpuPkg/Library/MmSaveStateLib/AmdMmSaveStateLib.inf
-+  AmdSysCallLib|UefiCpuPkg/Library/AmdSysCallLibNull/AmdSysCallLibNull.inf
 +
 +[LibraryClasses.common.SMM_CORE]
 +  PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
@@ -1019,8 +1037,9 @@ index 000000000..d35745814
 +!endif
 +!if $(SECURE_BOOT_ENABLE) == TRUE
 +  gUefiOvmfPkgTokenSpaceGuid.PcdSecureBootSupported|TRUE
-+  gEfiMdeModulePkgTokenSpaceGuid.PcdRequireSelfSignedPk|TRUE
++  gEfiMdeModulePkgTokenSpaceGuid.PcdRequireSelfSignedPk|FALSE
 +!endif
++  gEfiMdeModulePkgTokenSpaceGuid.PcdPeiMemoryBinsEnable|TRUE
 +
 +[PcdsFixedAtBuild]
 +  gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeMemorySize|1
@@ -1129,6 +1148,8 @@ index 000000000..d35745814
 +  #
 +  gUefiCpuPkgTokenSpaceGuid.PcdFirstTimeWakeUpAPsBySipi|FALSE
 +
++  gEfiMdePkgTokenSpaceGuid.PcdFSBClock|1000000000
++
 +################################################################################
 +#
 +# Pcd Dynamic Section - list of all EDK II PCD Entries defined by this Platform
@@ -1200,8 +1221,6 @@ index 000000000..d35745814
 +  # Set ConfidentialComputing defaults
 +  gEfiMdePkgTokenSpaceGuid.PcdConfidentialComputingGuestAttr|0
 +
-+  gEfiMdePkgTokenSpaceGuid.PcdFSBClock|1000000000
-+
 +[PcdsDynamicHii]
 +!include OvmfPkg/Include/Dsc/OvmfTpmPcdsHii.dsc.inc
 +
@@ -1225,6 +1244,12 @@ index 000000000..d35745814
 +  # PEI Phase modules
 +  #
 +  MdeModulePkg/Core/Pei/PeiMain.inf
++!if $(DEBUG_TO_MEM)
++  OvmfPkg/MemDebugLogPei/MemDebugLogPei.inf {
++    <LibraryClasses>
++      MemDebugLogLib|OvmfPkg/Library/MemDebugLogLib/MemDebugLogPeiLib.inf
++  }
++!endif
 +  MdeModulePkg/Universal/PCD/Pei/Pcd.inf  {
 +    <LibraryClasses>
 +      PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
@@ -1239,7 +1264,12 @@ index 000000000..d35745814
 +  }
 +  MdeModulePkg/Core/DxeIplPeim/DxeIpl.inf
 +
-+  OvmfPkg/PlatformPei/PlatformPei.inf
++  OvmfPkg/PlatformPei/PlatformPei.inf {
++    <LibraryClasses>
++!if $(DEBUG_TO_MEM)
++      MemDebugLogLib|OvmfPkg/Library/MemDebugLogLib/MemDebugLogPeiLib.inf
++!endif
++  }
 +
 +  UefiCpuPkg/Universal/Acpi/S3Resume2Pei/S3Resume2Pei.inf {
 +    <LibraryClasses>
@@ -1270,6 +1300,7 @@ index 000000000..d35745814
 +  MdeModulePkg/Universal/PCD/Dxe/Pcd.inf  {
 +   <LibraryClasses>
 +      PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
++      MemDebugLogLib|OvmfPkg/Library/MemDebugLogLib/MemDebugLogLibNull.inf
 +  }
 +
 +  MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
@@ -1323,7 +1354,9 @@ index 000000000..d35745814
 +  OvmfPkg/VirtioBlkDxe/VirtioBlk.inf
 +  OvmfPkg/VirtioScsiDxe/VirtioScsi.inf
 +  OvmfPkg/VirtioSerialDxe/VirtioSerial.inf
++  OvmfPkg/VirtioInputDxe/VirtioInput.inf
 +  MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
++  MdeModulePkg/Universal/TimestampDxe/TimestampDxe.inf
 +  MdeModulePkg/Universal/MonotonicCounterRuntimeDxe/MonotonicCounterRuntimeDxe.inf
 +  MdeModulePkg/Universal/CapsuleRuntimeDxe/CapsuleRuntimeDxe.inf
 +  MdeModulePkg/Universal/Console/ConPlatformDxe/ConPlatformDxe.inf
@@ -1337,6 +1370,9 @@ index 000000000..d35745814
 +    <LibraryClasses>
 +      DevicePathLib|MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.inf
 +      PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
++!if $(DEBUG_TO_MEM)
++      MemDebugLogLib|OvmfPkg/Library/MemDebugLogLib/MemDebugLogLibNull.inf
++!endif
 +  }
 +  MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
 +  MdeModulePkg/Universal/Disk/PartitionDxe/PartitionDxe.inf
@@ -1351,14 +1387,15 @@ index 000000000..d35745814
 +  MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
 +  MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
 +  MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
++  MdeModulePkg/Bus/Pci/CxlDxe/CxlDxe.inf
 +  MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
 +  MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
 +  MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
++  MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
 +
 +  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
 +  OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
 +  OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
-+  OvmfPkg/VirtioInputDxe/VirtioInput.inf
 +  OvmfPkg/VirtHstiDxe/VirtHstiDxe.inf
 +
 +  #
@@ -1382,14 +1419,16 @@ index 000000000..d35745814
 +  #
 +  MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
 +  OvmfPkg/AcpiPlatformDxe/AcpiPlatformDxe.inf
-+  MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
 +  MdeModulePkg/Universal/Acpi/BootScriptExecutorDxe/BootScriptExecutorDxe.inf
 +  MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
++  OvmfPkg/WsmtDxe/WsmtDxe.inf
 +
 +  #
 +  # Hash2 Protocol producer
 +  #
++!if $(NETWORK_ENABLE) == TRUE
 +  SecurityPkg/Hash2DxeCrypto/Hash2DxeCrypto.inf
++!endif
 +
 +  #
 +  # Network Support
@@ -1481,15 +1520,22 @@ index 000000000..d35745814
 +  #
 +!include OvmfPkg/Include/Dsc/OvmfTpmComponentsDxe.dsc.inc
 +
++  #
++  # Smbios Measurement support
++  #
++!if $(TPM2_ENABLE) == TRUE
++  MdeModulePkg/Universal/SmbiosMeasurementDxe/SmbiosMeasurementDxe.inf
++!endif
++
 +!if $(LOAD_X64_ON_IA32_ENABLE) == TRUE
 +  OvmfPkg/CompatImageLoaderDxe/CompatImageLoaderDxe.inf
 +!endif
 diff --git a/OvmfPkg/OvmfPkgIa32.fdf b/OvmfPkg/OvmfPkgIa32.fdf
 new file mode 100644
-index 000000000..a834e9b43
+index 000000000..e92c7818f
 --- /dev/null
 +++ b/OvmfPkg/OvmfPkgIa32.fdf
-@@ -0,0 +1,496 @@
+@@ -0,0 +1,478 @@
 +## @file
 +#  Open Virtual Machine Firmware: FDF
 +#
@@ -1552,43 +1598,7 @@ index 000000000..a834e9b43
 +
 +################################################################################
 +
-+[FD.MEMFD]
-+BaseAddress   = $(MEMFD_BASE_ADDRESS)
-+Size          = 0xF80000
-+ErasePolarity = 1
-+BlockSize     = 0x10000
-+NumBlocks     = 0xF8
-+
-+0x000000|0x006000
-+gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecPageTablesBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecPageTablesSize
-+
-+0x006000|0x001000
-+gUefiOvmfPkgTokenSpaceGuid.PcdOvmfLockBoxStorageBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfLockBoxStorageSize
-+
-+0x007000|0x001000
-+gEfiMdePkgTokenSpaceGuid.PcdGuidedExtractHandlerTableAddress|gUefiOvmfPkgTokenSpaceGuid.PcdGuidedExtractHandlerTableSize
-+
-+0x008000|0x001000
-+gUefiOvmfPkgTokenSpaceGuid.PcdOvmfWorkAreaBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfWorkAreaSize
-+
-+0x010000|0x010000
-+gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecPeiTempRamBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecPeiTempRamSize
-+
-+0x020000|0x0E0000
-+gUefiOvmfPkgTokenSpaceGuid.PcdOvmfPeiMemFvBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfPeiMemFvSize
-+FV = PEIFV
-+
-+0x100000|0xE80000
-+gUefiOvmfPkgTokenSpaceGuid.PcdOvmfDxeMemFvBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfDxeMemFvSize
-+FV = DXEFV
-+
-+##########################################################################################
-+# Set the SEV-ES specific work area PCDs (used for all forms of SEV since the
-+# the SEV STATUS MSR is now saved in the work area)
-+#
-+SET gUefiCpuPkgTokenSpaceGuid.PcdSevEsWorkAreaBase = $(MEMFD_BASE_ADDRESS) +  gUefiOvmfPkgTokenSpaceGuid.PcdOvmfWorkAreaBase + gUefiOvmfPkgTokenSpaceGuid.PcdOvmfConfidentialComputingWorkAreaHeader
-+SET gUefiCpuPkgTokenSpaceGuid.PcdSevEsWorkAreaSize = gUefiOvmfPkgTokenSpaceGuid.PcdOvmfWorkAreaSize - gUefiOvmfPkgTokenSpaceGuid.PcdOvmfConfidentialComputingWorkAreaHeader
-+##########################################################################################
++!include OvmfPkg/Include/Fdf/MemFd.fdf.inc
 +
 +################################################################################
 +
@@ -1650,6 +1660,9 @@ index 000000000..a834e9b43
 +#
 +#  PEI Phase modules
 +#
++!if $(DEBUG_TO_MEM)
++  INF  OvmfPkg/MemDebugLogPei/MemDebugLogPei.inf
++!endif
 +INF  MdeModulePkg/Core/Pei/PeiMain.inf
 +INF  MdeModulePkg/Universal/PCD/Pei/Pcd.inf
 +INF  MdeModulePkg/Universal/ReportStatusCodeRouter/Pei/ReportStatusCodeRouterPei.inf
@@ -1725,12 +1738,14 @@ index 000000000..a834e9b43
 +INF  OvmfPkg/VirtioBlkDxe/VirtioBlk.inf
 +INF  OvmfPkg/VirtioScsiDxe/VirtioScsi.inf
 +INF  OvmfPkg/VirtioSerialDxe/VirtioSerial.inf
++INF  OvmfPkg/VirtioInputDxe/VirtioInput.inf
 +
 +!if $(SECURE_BOOT_ENABLE) == TRUE
 +  INF  SecurityPkg/VariableAuthenticated/SecureBootConfigDxe/SecureBootConfigDxe.inf
 +!endif
 +
 +INF  MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
++INF  MdeModulePkg/Universal/TimestampDxe/TimestampDxe.inf
 +INF  MdeModulePkg/Universal/MonotonicCounterRuntimeDxe/MonotonicCounterRuntimeDxe.inf
 +INF  MdeModulePkg/Universal/CapsuleRuntimeDxe/CapsuleRuntimeDxe.inf
 +INF  MdeModulePkg/Universal/Console/ConPlatformDxe/ConPlatformDxe.inf
@@ -1753,9 +1768,11 @@ index 000000000..a834e9b43
 +INF  MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
 +INF  MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
 +INF  MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
++INF  MdeModulePkg/Bus/Pci/CxlDxe/CxlDxe.inf
 +INF  MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
 +INF  MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
 +INF  MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
++INF  MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
 +
 +INF  OvmfPkg/SioBusDxe/SioBusDxe.inf
 +!if $(SOURCE_DEBUG_ENABLE) == FALSE
@@ -1768,7 +1785,6 @@ index 000000000..a834e9b43
 +
 +INF  MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
 +INF  OvmfPkg/AcpiPlatformDxe/AcpiPlatformDxe.inf
-+INF  MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
 +INF  MdeModulePkg/Universal/Acpi/BootScriptExecutorDxe/BootScriptExecutorDxe.inf
 +INF  MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
 +
@@ -1781,13 +1797,17 @@ index 000000000..a834e9b43
 +#
 +# Hash2 Protocol producer
 +#
-+INF SecurityPkg/Hash2DxeCrypto/Hash2DxeCrypto.inf
++!if $(NETWORK_ENABLE) == TRUE
++  INF SecurityPkg/Hash2DxeCrypto/Hash2DxeCrypto.inf
++!endif
 +
 +#
 +# Network modules
 +#
 +!include NetworkPkg/Network.fdf.inc
++!if $(NETWORK_ENABLE) == TRUE
 +  INF  OvmfPkg/VirtioNetDxe/VirtioNet.inf
++!endif
 +
 +#
 +# Usb Support
@@ -1803,7 +1823,6 @@ index 000000000..a834e9b43
 +INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
 +INF  OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
 +INF  OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
-+INF  OvmfPkg/VirtioInputDxe/VirtioInput.inf
 +INF  OvmfPkg/PlatformDxe/Platform.inf
 +INF  OvmfPkg/IoMmuDxe/IoMmuDxe.inf
 +INF  OvmfPkg/VirtHstiDxe/VirtHstiDxe.inf
@@ -1839,6 +1858,8 @@ index 000000000..a834e9b43
 +INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
 +!endif
 +
++INF  OvmfPkg/WsmtDxe/WsmtDxe.inf
++
 +#
 +# TPM support
 +#
@@ -1848,6 +1869,13 @@ index 000000000..a834e9b43
 +!include OvmfPkg/Include/Fdf/MorLock.fdf.inc
 +!include OvmfPkg/Include/Fdf/OvmfRngDxe.fdf.inc
 +!include OvmfPkg/Include/Fdf/OvmfOptHw.fdf.inc
++
++  #
++  # Smbios Measurement support
++  #
++!if $(TPM2_ENABLE) == TRUE
++INF MdeModulePkg/Universal/SmbiosMeasurementDxe/SmbiosMeasurementDxe.inf
++!endif
 +
 +!if $(LOAD_X64_ON_IA32_ENABLE) == TRUE
 +INF  OvmfPkg/CompatImageLoaderDxe/CompatImageLoaderDxe.inf
