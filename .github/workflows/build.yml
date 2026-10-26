@@ -78,14 +78,14 @@ jobs:
           build -b RELEASE -t GCC -a AARCH64 -p ArmVirtPkg/ArmVirtQemu.dsc
           cp Build/ArmVirtQemu-AArch64/RELEASE_GCC/FV/QEMU_EFI.fd  output/ovmf-code-aarch64.fd
           cp Build/ArmVirtQemu-AArch64/RELEASE_GCC/FV/QEMU_VARS.fd output/ovmf-vars-aarch64.fd
-          build -b RELEASE -t GCC -a AARCH64 -p ArmVirtPkg/ArmVirtQemu.dsc -D SECURE_BOOT_ENABLE=TRUE -D TPM2_ENABLE=TRUE
+          build -b RELEASE -t GCC -a AARCH64 -p ArmVirtPkg/ArmVirtQemu.dsc -D SECURE_BOOT_ENABLE=TRUE -D TPM2_ENABLE=TRUE -D TPM2_CONFIG_ENABLE=TRUE
           cp Build/ArmVirtQemu-AArch64/RELEASE_GCC/FV/QEMU_EFI.fd  output/ovmf-code-aarch64-secboot.fd
           cp Build/ArmVirtQemu-AArch64/RELEASE_GCC/FV/QEMU_VARS.fd output/ovmf-vars-aarch64-secboot.fd
 
           build -b RELEASE -t GCC -a LOONGARCH64 -p OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc
           cp Build/LoongArchVirtQemu/RELEASE_GCC/FV/QEMU_EFI.fd  output/ovmf-code-loongarch64.fd
           cp Build/LoongArchVirtQemu/RELEASE_GCC/FV/QEMU_VARS.fd output/ovmf-vars-loongarch64.fd
-          build -b RELEASE -t GCC -a LOONGARCH64 -p OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc -D SECURE_BOOT_ENABLE=TRUE -D TPM2_ENABLE=TRUE
+          build -b RELEASE -t GCC -a LOONGARCH64 -p OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc -D SECURE_BOOT_ENABLE=TRUE -D TPM2_ENABLE=TRUE -D TPM2_CONFIG_ENABLE=TRUE
           cp Build/LoongArchVirtQemu/RELEASE_GCC/FV/QEMU_EFI.fd  output/ovmf-code-loongarch64-secboot.fd
           cp Build/LoongArchVirtQemu/RELEASE_GCC/FV/QEMU_VARS.fd output/ovmf-vars-loongarch64-secboot.fd
 
